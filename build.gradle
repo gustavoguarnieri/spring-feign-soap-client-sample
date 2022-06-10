@@ -1,0 +1,75 @@
+buildscript {
+    ext {
+        kotlinVersion = "1.6.21"
+        springBootVersion = "2.7.0"
+        springDocVersion= "1.6.8"
+    }
+    repositories {
+        mavenCentral()
+    }
+    dependencies {
+        classpath "no.nils:wsdl2java:0.10"
+        classpath "org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}"
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlinVersion"
+        classpath "org.jetbrains.kotlin:kotlin-allopen:$kotlinVersion"
+        classpath "org.jetbrains.kotlin:kotlin-noarg:$kotlinVersion"
+    }
+}
+
+plugins {
+    id "org.springframework.boot" version "${springBootVersion}"
+    id "io.spring.dependency-management" version "1.0.11.RELEASE"
+    id "java-library"
+    id "net.researchgate.release" version "2.6.0"
+}
+
+apply plugin: "no.nils.wsdl2java"
+apply plugin: "java"
+apply plugin: "kotlin"
+apply plugin: "kotlin-spring"
+apply plugin: "kotlin-noarg"
+
+repositories {
+    mavenCentral()
+}
+
+group = "br.com.example.spring.boot.feign.client.sample"
+sourceCompatibility = JavaVersion.VERSION_11
+
+dependencies {
+    implementation("org.springframework.boot:spring-boot-starter-web:$springBootVersion")
+    implementation("org.springframework.boot:spring-boot-starter-validation:$springBootVersion")
+    implementation("org.springdoc:springdoc-openapi-ui:$springDocVersion")
+    implementation("io.github.microutils:kotlin-logging:2.1.23")
+    implementation("org.springframework.cloud:spring-cloud-starter-openfeign:3.1.3")
+    implementation("io.github.openfeign:feign-soap:11.8")
+    implementation("com.sun.xml.ws:jaxws-ri:2.3.5")
+    implementation("org.jvnet.jaxb2_commons:jaxb2-basics-runtime:1.11.1")
+
+    wsdl2java("org.jvnet.jaxb2_commons:jaxb2-basics-runtime:1.11.1")
+    wsdl2java("org.jvnet.jaxb2_commons:jaxb2-basics:1.11.1")
+    wsdl2java("com.sun.xml.ws:jaxws-ri:2.3.5")
+
+    testImplementation("org.springframework.boot:spring-boot-starter-test")
+}
+
+test {
+    useJUnitPlatform()
+}
+
+jar {
+    enabled = true
+}
+
+wsdl2java {
+    wsdlsToGenerate = [
+            ["-xjc-XtoString", "-b", "$projectDir/bindings.xml", "-p", "br.com.example.spring.boot.feign.client.sample.model.soap", "-autoNameResolution", "-wsdlLocation", "http://localhost/webservicesserver/NumberConversion.wso?wsdl", "$projectDir/src/main/resources/soap/wsdl/numberConversion.wsdl"],
+    ]
+    generatedWsdlDir = file("$projectDir/src/main/kotlin")
+    wsdlDir = file("$projectDir/src/main/resources/soap/wsdl")
+    locale = Locale.ENGLISH
+}
+
+wsdl2javaExt {
+    cxfVersion = "3.5.2"
+}

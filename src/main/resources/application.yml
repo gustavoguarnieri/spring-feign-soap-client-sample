@@ -1,0 +1,26 @@
+server:
+  port: 9080
+  servlet:
+    context-path: /feign-soap-client
+
+host:
+  soap:
+    number-conversion:
+      url: https://www.dataaccess.com/webservicesserver/NumberConversion.wso
+      wsdl: https://www.dataaccess.com/webservicesserver/NumberConversion.wso?WSDL
+
+logging:
+  level:
+    root: INFO
+
+feign:
+  client:
+    config:
+      default:
+        connectTimeout: 10000
+        readTimeout: 10000
+        loggerLevel: FULL
+
+springdoc:
+  packagesToScan: br.com.example.spring.boot.feign.client.sample.controller
+  pathsToMatch: /**
